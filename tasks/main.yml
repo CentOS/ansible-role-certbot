@@ -1,0 +1,46 @@
+---
+# tasks file for certbot---
+- name: Ensuring httpd is installed
+  yum: 
+    name: httpd 
+    state: installed
+
+- name: Ensuring httpd service is started
+  service: 
+    name: httpd 
+    state: started 
+    enabled: true
+
+- name: Opening up httpd rule
+  include_role:
+    name: iptables
+    tasks_from: custom-policy
+  vars:
+    iptables_policy_name: httpd
+    iptables_protocol: tcp
+    iptables_port: "80"
+    iptables_source: "0.0.0.0/0"
+  when: httpd_public
+  tags:
+    - iptables
+
+- name: Installing certbot
+  yum:
+    name: certbot
+    state: installed
+
+- name: Default stupid catch-all html index
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+
+- include_role:
+    name: centos-backup
+    tasks_from: client
+
+- name: ensuring backing up certs and config
+  lineinfile:
+    path: /etc/centos-backup
+    state: present
+    regexp: '^/etc/letsencrypt'
+    line: '/etc/letsencrypt'
