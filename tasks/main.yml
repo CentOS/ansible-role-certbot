@@ -29,6 +29,12 @@
     name: certbot
     state: installed
 
+- name: Installing acme.sh for dns challenge validation
+  get_url:
+    url: https://raw.githubusercontent.com/Neilpang/acme.sh/master/acme.sh
+    dest: /usr/local/bin/acme.sh
+    mode: 0755
+
 - name: Default stupid catch-all html index
   template:
     src: index.html.j2
