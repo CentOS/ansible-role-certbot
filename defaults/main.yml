@@ -1,2 +1,5 @@
 ---
 # defaults file for certbot
+
+# By default opening httpd for http challenges
+httpd_public: True
