@@ -1,5 +1,12 @@
 ---
 # tasks file for certbot---
+- name: Ensuring needed pkgs are installed
+  yum: 
+    name: "{{ certbot_pkgs }}"
+    state: installed
+  tags:
+    - pkgs
+
 - name: Ensuring httpd is installed
   yum: 
     name: httpd 
@@ -24,11 +31,6 @@
   tags:
     - iptables
 
-- name: Installing certbot
-  yum:
-    name: certbot
-    state: installed
-
 - name: Installing acme.sh for dns challenge validation
   get_url:
     url: https://raw.githubusercontent.com/Neilpang/acme.sh/master/acme.sh
@@ -41,13 +43,12 @@
     dest: /var/www/html/index.html
     mode: 0644
 
-- include_role:
+- name: Ensuring backup user and jobs
+  include_role:
     name: centos-backup
     tasks_from: client
+  vars:
+    - centos_role: stikked
+    - role_backup_folders:
+        - "{{ acme_tls_dir }}"
 
-- name: ensuring backing up certs and config
-  lineinfile:
-    path: /etc/centos-backup
-    state: present
-    regexp: '^/etc/letsencrypt'
-    line: '/etc/letsencrypt'

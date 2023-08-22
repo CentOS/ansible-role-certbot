@@ -1,5 +1,12 @@
 ---
 # defaults file for certbot
 
+# packages to be installed to satisfy acme.sh plugins
+certbot_pkgs:
+  - bind-utils
+
 # By default opening httpd for http challenges
 httpd_public: True
+
+# Where should we find generated tls files
+acme_tls_dir: /var/lib/acme
